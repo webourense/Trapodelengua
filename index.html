@@ -256,7 +256,10 @@ body{overflow-x:hidden}
   <article class="gamecard"><div class="cardemoji">✨</div><h3>Sílabas mágicas: el reto de Lúxor</h3><p>Completa sílabas, cuenta las partes de cada palabra y descubre cómo se separan. Gana puntos y rachas con niveles y retos ajustables.</p><button id="chooseSyllables" class="btn primary full" type="button">Entrar en Lúxor →</button></article>
  </div>
  <div id="hubMedals" class="hubmedals" aria-label="Medallas"></div>
-
+ <div class="adultzone" role="region" aria-label="Zona de adultos">
+  <div class="adulthead"><span class="lock" aria-hidden="true">🔒</span><div><b>Zona de adultos</b><small>Registros, informes, ajustes y listas de palabras</small></div></div>
+  <div class="adultbtns"><button id="chooseReport" class="btn secondary" type="button">📊 Registros e informes</button><button id="chooseSettings" class="btn secondary" type="button">⚙️ Ajustes y vocabulario</button></div>
+ </div>
 </section>
 <main class="hidden">
 <aside>
@@ -1029,7 +1032,19 @@ table.rep td { padding: 9px 10px; border-top: 1px solid #f0edfa; white-space: no
     while (days[d.toDateString()]) { n++; d.setDate(d.getDate() - 1); }
     return n;
   }
-
+  function hubToday() {
+    var el = byId('hubToday');
+    if (!el) return;
+    var all = load().map(function (r) { return { r: r, t: ts(r) }; });
+    var h = new Date().getHours();
+    var hi = h < 13 ? '¡Buenos días!' : h < 21 ? '¡Buenas tardes!' : '¡Buenas noches!';
+    if (!all.length) { el.innerHTML = '<span class="chip">👋 ' + hi + ' Elige un juego y empieza tu primera ronda</span>'; return; }
+    var today = new Date().toDateString();
+    var t = all.filter(function (o) { return new Date(o.t).toDateString() === today; });
+    var words = t.reduce(function (s, o) { return s + (o.r.correct || 0); }, 0);
+    var st = streakDays(all);
+    el.innerHTML = '<span class="chip">👋 ' + hi + '</span><span class="chip">📅 Hoy: ' + t.length + (t.length === 1 ? ' sesión' : ' sesiones') + '</span><span class="chip">🌟 ' + words + ' aciertos hoy</span>' + (st ? '<span class="chip">🔥 Racha de ' + st + (st === 1 ? ' día' : ' días') + '</span>' : '');
+  }
 
   function fill(all) {
     var names = [], modes = [];
@@ -1961,12 +1976,6 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 <!-- ===== FIN CAPA PRO v6 ===== -->
-
-
-
-
-
-
 
 <footer id="footer-infantil"> <style> #footer-infantil
 { --footer-purple: #7965df; --footer-text: #58627b;
